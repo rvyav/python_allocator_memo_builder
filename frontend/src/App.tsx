@@ -1,8 +1,8 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
+import apiClient from "./api/HttpRequest";
 
 import "./App.css";
-import apiClient from "./api/HttpRequest";
 
 import {
   liquidityOptions,
