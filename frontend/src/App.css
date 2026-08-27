@@ -1,0 +1,225 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, sans-serif;
+    background: #f7f8fa;
+    color: #1f2937;
+}
+
+.home-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.upload-layout {
+    width: 100%;
+    max-width: 1200px;
+
+    display: grid;
+
+    /* LEFT: Preferences | RIGHT: Upload */
+    grid-template-columns: 400px minmax(0, 1fr);
+
+    gap: 60px;
+
+    align-items: center;
+}
+
+/* RIGHT - UPLOAD */
+
+.upload-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.upload-section h1 {
+    margin: 0 0 24px;
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.upload-box {
+    width: 100%;
+    min-height: 320px;
+
+    padding: 48px;
+
+    background: white;
+    border: 2px dashed #d1d5db;
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.file-label {
+    width: 100%;
+    cursor: pointer;
+}
+
+.file-label span {
+    display: block;
+
+    padding: 18px 24px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #f9fafb;
+}
+
+.file-label input {
+    display: none;
+}
+
+.upload-hint {
+    margin: 16px 0 24px;
+
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.upload-button {
+    border: none;
+    border-radius: 8px;
+
+    padding: 12px 28px;
+
+    background: #2563eb;
+    color: white;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.upload-button:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.upload-button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* LEFT - PREFERENCES */
+
+.preferences {
+    width: 100%;
+
+    padding: 28px;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.preferences h2 {
+    margin: 0 0 24px;
+
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.field {
+    margin-bottom: 20px;
+}
+
+.field label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.field select {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: white;
+
+    font-size: 14px;
+}
+
+.field select:focus {
+    outline: none;
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.field select[multiple] {
+    padding: 4px;
+}
+
+.field select[multiple] option {
+    padding: 7px 8px;
+}
+
+.field small {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #6b7280;
+}
+
+.status {
+    margin-top: 24px;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    text-align: center;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.status-incomplete {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-ready {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* MOBILE */
+
+@media (max-width: 900px) {
+    .home-page {
+        padding: 24px;
+    }
+
+    .upload-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
