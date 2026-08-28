@@ -19,8 +19,8 @@ Make sure to be in the root folder of the project, the one that includes `fronte
 ```
 DJANGO_SECRET_KEY="django-insecure-mg%%am6*tbreo)(mty2y@ol&nup(7^g@!=urwq(4mk!pj-pngz"
 POSTGRESQL_NAME=[your-postgresql-db-name]
-POSTGRESQL_USER=[your-postgresql-db-name]
-POSTGRESQL_PASSWORD=[your-postgresql-db-name]
+POSTGRESQL_USER=[your-postgresql-db-user]
+POSTGRESQL_PASSWORD=[your-postgresql-db-password]
 POSTGRESQL_HOST=localhost
 POSTGRESQL_PORT=5432
 OPENAI_API_KEY=[your-openai-developer-ai-key]
