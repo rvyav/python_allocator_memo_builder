@@ -1,7 +1,6 @@
 import json
 
 from django.conf import settings
-
 from openai import OpenAI
 
 client = OpenAI()

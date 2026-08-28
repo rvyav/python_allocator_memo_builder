@@ -37,6 +37,10 @@ export interface RankedFund {
     performance: Performance;
     reasons: string[];
     rank: number;
+    manager_name: string;
+    benchmark_ticker: string;
+    redemption_frequency: string;
+    aum: number;
 }
 
 export interface MemoSection {

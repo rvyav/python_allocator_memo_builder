@@ -8,6 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 import io
 import csv
 import numpy as np
+import pandas as pd
 import json
 
 import yfinance as yf
@@ -19,6 +20,7 @@ from .constants import (
     
 from .helpers import parse_date
 
+from .services.funds import group_funds
 from .services.metrics import build_ranked_shortlist
 from .services.claims import build_claims
 from .services.memos import (
@@ -160,10 +162,7 @@ def upload(request):
         rows = []
 
         # Process rows
-        for row_number, row in enumerate(
-            reader,
-            start=2
-        ):
+        for row_number, row in enumerate(reader, start=2):
             try:
                 # Strings
                 fund_id = (row.get("fund_id") or "").strip()
@@ -286,149 +285,212 @@ def upload(request):
                 status.HTTP_400_BAD_REQUEST
             ),
         )
-
+    
     # ANALYSIS PIPELINE
-    from collections import defaultdict
     from pprint import pprint
 
-    # Group rows by fund
-    funds = defaultdict(list)
-
-    for row in rows:
-        funds[row["fund_id"]].append(row)
-
+    # 1. GROUP MONTHLY ROWS BY FUND
+    funds = group_funds(rows)
     print("************* FUNDS *************")
+    print("Fund IDs:", list(funds.keys()))
 
-    pprint(dict(funds))
+    for (fund_id, fund_rows) in funds.items():
+        print(
+            fund_id,
+            "observations:",
+            len(fund_rows),
+        )
 
-    # Benchmark data
+
+    # 2. FIND DATA DATE RANGE
+    all_dates = [pd.to_datetime(row["date"]) for row in rows]
+    fund_start_date = min(all_dates)
+    fund_end_date = max(all_dates)
+
+    # We need an earlier benchmark
+    # price so pct_change() can calculate
+    # the first fund month return.
+
+    benchmark_start_date = (fund_start_date - pd.DateOffset(months=1))
+
+    # Give Yahoo enough time after the
+    # last fund month.
+    benchmark_end_date = (fund_end_date + pd.DateOffset(months=1))
+
+    print("Fund period:", fund_start_date, "to", fund_end_date)
+
+    # 3. GET UNIQUE BENCHMARKS
+    benchmark_tickers = {
+        row[
+            "benchmark_ticker"
+        ]
+        .strip()
+        .upper()
+
+        for row in rows
+    }
+
+    print("Benchmarks:", benchmark_tickers)
+
+    # 4. DOWNLOAD BENCHMARK DATA
     benchmark_data = {}
-    benchmark_tickers = { row["benchmark_ticker"] for row in rows }
-
-    for ticker_symbol in benchmark_tickers:
-        ticker = yf.Ticker(
-            ticker_symbol
-        )
+    for ticker_symbol in (benchmark_tickers):
+        print("Downloading benchmark:", ticker_symbol)
+        ticker = yf.Ticker(ticker_symbol)
         history = ticker.history(
-            start="2025-01-01",
-            end="2025-04-01",
+            start=benchmark_start_date.strftime("%Y-%m-%d"),
+            end=benchmark_end_date.strftime("%Y-%m-%d"),
         )
+        if history.empty:
+            return Response(
+                {
+                    "error": f"No benchmark data was returned for {ticker_symbol}."
+                    
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         monthly_prices = (
             history["Close"]
             .resample("ME")
             .last()
         )
+
         benchmark_returns = (
             monthly_prices
             .pct_change()
             .dropna()
         )
-        benchmark_returns.index = (
-            benchmark_returns
-            .index
-            .tz_localize(None)
-        )
-        benchmark_data[
-            ticker_symbol
-        ] = benchmark_returns
+
+        if (benchmark_returns.index.tz is not None):
+            benchmark_returns.index = (
+                benchmark_returns
+                .index
+                .tz_localize(None)
+            )
+
+
+        benchmark_data[ticker_symbol] = benchmark_returns
 
     print("************* BENCHMARK DATA *************")
 
-    pprint(benchmark_data.keys())
+    for (ticker, returns) in benchmark_data.items():
+        print(ticker, "observations:", len(returns))
 
-    # Rank funds
+    # 5. RANK ALL ELIGIBLE FUNDS
     print("************* RANKING *************")
 
-    ranked_shortlist = (
-        build_ranked_shortlist(
-            funds,
-            mandate,
-            benchmark_data,
+    try:
+        ranked_shortlist = (
+            build_ranked_shortlist(
+                funds,
+                mandate,
+                benchmark_data,
+            )
         )
-    )
+
+    except ValueError as exc:
+        return Response(
+            {
+                "error": str(exc)
+            },
+            status=(
+                status.HTTP_400_BAD_REQUEST
+            ),
+        )
 
     pprint(ranked_shortlist)
 
-    # Build deterministic claims
-    print("************* BUILD CLAIMS *************")
+    # No eligible funds
+    if not ranked_shortlist:
+        return Response(
+            {
+                "message": (
+                    "Analysis completed, "
+                    "but no funds satisfied "
+                    "the mandate."
+                ),
+                "data": {
+                    "filename": filename,
+                    "row_count": len(rows),
+                    "fund_count": len(funds),
+                    "ranked_shortlist": [],
+                    "claims": [],
+                    "memo": None,
+                    "audit": [],
+                },
+            },
+            status=(
+                status.HTTP_200_OK
+            ),
+        )
 
-    claims = build_claims(
-        ranked_shortlist,
-        funds,
+    # 6. BUILD CLAIMS FOR ALL RANKED FUNDS
+    print(
+        "************* "
+        "BUILD CLAIMS "
+        "*************"
     )
 
+    claims = build_claims(ranked_shortlist)
     pprint(claims)
 
-    # ACTION 1:
-    # GENERATE IC MEMO
-
-    print("************* GENERATE IC MEMO *************")
+    # 7. GENERATE MEMO
+    print(
+        "************* "
+        "GENERATE IC MEMO "
+        "*************"
+    )
 
     try:
         memo = generate_ic_memo(claims)
     except Exception as exc:
-        print(
-            "OpenAI memo generation "
-            "failed:",
-            exc
-        )
+        print("OpenAI memo generation failed:", exc)
+
         return Response(
             {
-                "error": (
-                    "Failed to generate "
-                    "IC memo."
-                ),
-
-                "details": str(
-                    exc
-                ),
+                "error": "Failed to generate IC memo.",
+                "details": str(exc),
             },
-            status=(
-                status.HTTP_502_BAD_GATEWAY
-            ),
+            status=status.HTTP_502_BAD_GATEWAY,
         )
     pprint(memo)
 
-    # VALIDATE CLAIM IDs
+    # 8. VALIDATE LLM CLAIM IDS
     invalid_claim_ids = validate_memo_claims(memo, claims)
 
     if invalid_claim_ids:
         return Response(
             {
-                "error": (
-                    "Generated memo "
-                    "referenced invalid claims."
-                ),
-                "invalid_claim_ids": (
-                    invalid_claim_ids
-                ),
+                "error": "Generated memo referenced invalid claims.",
+                "invalid_claim_ids": invalid_claim_ids,
             },
-            status=(
-                status.HTTP_500_INTERNAL_SERVER_ERROR
-            ),
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
-    # ACTION 2:
-    # BUILD AUDIT VIEW
-    print("************* BUILD AUDIT VIEW *************")
+    # 9. BUILD AUDIT VIEW
+    print(
+        "************* "
+        "BUILD AUDIT VIEW "
+        "*************"
+    )
     audit = build_audit_view(memo, claims)
-
+    
     pprint(audit)
 
     return Response(
         {
             "message": "Analysis completed successfully",
             "data": {
+
                 "filename": filename,
                 "row_count": len(rows),
-                "rows": rows,
+                "fund_count": len(funds),
+                "benchmark_tickers": sorted(benchmark_tickers),
                 "ranked_shortlist": ranked_shortlist,
                 "claims": claims,
                 "memo": memo,
                 "audit": audit,
             },
         },
-        status=(
-            status.HTTP_200_OK
-        ),
+        status=status.HTTP_200_OK,
     )

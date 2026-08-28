@@ -18,6 +18,23 @@ REQUIRED_COLUMNS = {
     "key_risks",
 }
 
+FUND_METADATA_FIELDS = [
+    "fund_id",
+    "fund_name",
+    "manager_name",
+    "strategy",
+    "inception_date",
+    "aum",
+    "management_fee",
+    "performance_fee",
+    "lockup_months",
+    "redemption_frequency",
+    "notice_period_days",
+    "benchmark_ticker",
+    "notes",
+    "key_risks",
+]
+
 MAX_UPLOAD_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 
 
