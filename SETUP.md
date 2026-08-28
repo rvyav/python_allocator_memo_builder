@@ -10,6 +10,8 @@ Make sure to be in the following folder `frontend/src/` then do:
 
 Now open the browser and then application should be available on: `http://localhost:5173/`
 
+When the backend is also up and running, please use the file `fund_universe.csv` located in documents folder from this project root.
+
 ## BACKEND
 
 Make sure to be in the root folder of the project, the one that includes `frontend` and `backend` folders then:
