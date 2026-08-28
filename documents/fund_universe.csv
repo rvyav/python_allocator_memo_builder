@@ -1,0 +1,37 @@
+﻿fund_id,fund_name,manager_name,strategy,inception_date,aum,management_fee,performance_fee,lockup_months,redemption_frequency,notice_period_days,benchmark_ticker,date,monthly_return,notes,key_risks
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,1/31/25,0.018,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,2/28/25,-0.012,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,3/31/25,0.021,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,4/30/25,0.014,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,5/31/25,-0.009,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,6/30/25,0.026,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,7/31/25,0.017,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,8/31/25,-0.015,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,9/30/25,0.022,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,10/31/25,0.011,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,11/30/25,-0.007,Healthcare focus,Short squeeze risk
+F001,Alpha Fund,Alpha Capital,Long/Short Equity,1/1/18,500000000,0.02,0.2,12,Monthly,30,SPY,12/31/25,0.019,Healthcare focus,Short squeeze risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,1/31/25,0.013,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,2/28/25,0.006,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,3/31/25,-0.011,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,4/30/25,0.017,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,5/31/25,0.009,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,6/30/25,-0.006,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,7/31/25,0.014,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,8/31/25,0.008,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,9/30/25,-0.01,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,10/31/25,0.016,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,11/30/25,0.007,Global macro allocation,Macro regime risk
+F002,Beta Fund,Beta Partners,Global Macro,6/1/16,750000000,0.015,0.15,6,Monthly,20,QQQ,12/31/25,0.012,Global macro allocation,Macro regime risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,1/31/25,0.009,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,2/28/25,0.004,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,3/31/25,-0.005,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,4/30/25,0.01,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,5/31/25,0.006,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,6/30/25,-0.004,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,7/31/25,0.011,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,8/31/25,0.005,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,9/30/25,-0.003,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,10/31/25,0.008,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,11/30/25,0.004,Low beta portfolio,Model risk
+F003,Gamma Fund,Gamma Investments,Market Neutral,3/1/19,320000000,0.018,0.18,3,Weekly,10,AGG,12/31/25,0.009,Low beta portfolio,Model risk
