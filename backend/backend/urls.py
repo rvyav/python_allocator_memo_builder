@@ -16,11 +16,11 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
-from .views import health_check, upload
+from django.urls import path, include
+from .views import health_check
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("all_safe_xxx_safe_all/", admin.site.urls), # crazy urls to hide the admin
     path("health/", health_check),
-    path("upload/", upload),
+    path('upload/', include('core.urls', namespace='core')),
 ]
