@@ -1,0 +1,182 @@
+.result-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.result-header h1 {
+    margin: 4px 0;
+}
+
+.eyebrow {
+    margin: 0;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+}
+
+.fund-summary {
+    display: grid;
+    grid-template-columns:
+        repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.fund-summary>div,
+.metric {
+    padding: 18px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.fund-summary span,
+.metric span {
+    display: block;
+    font-size: 13px;
+    opacity: 0.65;
+    margin-bottom: 6px;
+}
+
+.fund-summary strong,
+.metric strong {
+    font-size: 18px;
+}
+
+.memo-card,
+.performance-card,
+.audit-card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 28px;
+}
+
+.memo-card h2 {
+    margin-top: 30px;
+}
+
+.memo-card h2:first-child {
+    margin-top: 0;
+}
+
+.memo-card p {
+    line-height: 1.7;
+}
+
+.appendix {
+    margin-top: 16px;
+}
+
+.appendix-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(3, 1fr);
+    gap: 14px;
+}
+
+.audit-description {
+    opacity: 0.65;
+    margin-bottom: 28px;
+}
+
+.audit-item {
+    padding: 24px 0;
+    border-top: 1px solid #ddd;
+}
+
+.audit-item h3 {
+    margin-top: 0;
+}
+
+.audit-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+    margin-bottom: 8px;
+}
+
+.memo-claim {
+    margin-bottom: 20px;
+}
+
+.memo-claim p {
+    line-height: 1.6;
+}
+
+.supporting-claims {
+    display: grid;
+    gap: 12px;
+}
+
+.claim-card {
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.claim-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.claim-header span {
+    font-size: 13px;
+    opacity: 0.6;
+}
+
+.claim-card p {
+    margin: 0 0 12px;
+}
+
+.claim-value {
+    font-size: 14px;
+}
+
+.empty-result {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+@media (max-width: 800px) {
+
+    .fund-summary,
+    .metrics-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 520px) {
+
+    .fund-summary,
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .result-header {
+        flex-direction: column;
+    }
+}
