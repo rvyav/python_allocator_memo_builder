@@ -38,13 +38,11 @@ from .services.memos import (
 def upload(request):
     file_data = request.FILES.get("file")
     mandate = request.data.get("document_preferences")
-    print("file mandate ===> ", mandate)
     filename = (
         file_data.name
         if file_data
         else None
     )
-    print("filename ===============>", filename)
 
     # Parse mandate
     if isinstance(mandate, str):
@@ -287,20 +285,9 @@ def upload(request):
         )
     
     # ANALYSIS PIPELINE
-    from pprint import pprint
 
     # 1. GROUP MONTHLY ROWS BY FUND
     funds = group_funds(rows)
-    print("************* FUNDS *************")
-    print("Fund IDs:", list(funds.keys()))
-
-    for (fund_id, fund_rows) in funds.items():
-        print(
-            fund_id,
-            "observations:",
-            len(fund_rows),
-        )
-
 
     # 2. FIND DATA DATE RANGE
     all_dates = [pd.to_datetime(row["date"]) for row in rows]
@@ -317,8 +304,6 @@ def upload(request):
     # last fund month.
     benchmark_end_date = (fund_end_date + pd.DateOffset(months=1))
 
-    print("Fund period:", fund_start_date, "to", fund_end_date)
-
     # 3. GET UNIQUE BENCHMARKS
     benchmark_tickers = {
         row[
@@ -330,12 +315,9 @@ def upload(request):
         for row in rows
     }
 
-    print("Benchmarks:", benchmark_tickers)
-
     # 4. DOWNLOAD BENCHMARK DATA
     benchmark_data = {}
     for ticker_symbol in (benchmark_tickers):
-        print("Downloading benchmark:", ticker_symbol)
         ticker = yf.Ticker(ticker_symbol)
         history = ticker.history(
             start=benchmark_start_date.strftime("%Y-%m-%d"),
@@ -371,14 +353,7 @@ def upload(request):
 
         benchmark_data[ticker_symbol] = benchmark_returns
 
-    print("************* BENCHMARK DATA *************")
-
-    for (ticker, returns) in benchmark_data.items():
-        print(ticker, "observations:", len(returns))
-
     # 5. RANK ALL ELIGIBLE FUNDS
-    print("************* RANKING *************")
-
     try:
         ranked_shortlist = (
             build_ranked_shortlist(
@@ -397,8 +372,6 @@ def upload(request):
                 status.HTTP_400_BAD_REQUEST
             ),
         )
-
-    pprint(ranked_shortlist)
 
     # No eligible funds
     if not ranked_shortlist:
@@ -425,27 +398,12 @@ def upload(request):
         )
 
     # 6. BUILD CLAIMS FOR ALL RANKED FUNDS
-    print(
-        "************* "
-        "BUILD CLAIMS "
-        "*************"
-    )
-
     claims = build_claims(ranked_shortlist)
-    pprint(claims)
 
     # 7. GENERATE MEMO
-    print(
-        "************* "
-        "GENERATE IC MEMO "
-        "*************"
-    )
-
     try:
         memo = generate_ic_memo(claims)
     except Exception as exc:
-        print("OpenAI memo generation failed:", exc)
-
         return Response(
             {
                 "error": "Failed to generate IC memo.",
@@ -453,7 +411,6 @@ def upload(request):
             },
             status=status.HTTP_502_BAD_GATEWAY,
         )
-    pprint(memo)
 
     # 8. VALIDATE LLM CLAIM IDS
     invalid_claim_ids = validate_memo_claims(memo, claims)
@@ -468,14 +425,7 @@ def upload(request):
         )
 
     # 9. BUILD AUDIT VIEW
-    print(
-        "************* "
-        "BUILD AUDIT VIEW "
-        "*************"
-    )
     audit = build_audit_view(memo, claims)
-    
-    pprint(audit)
 
     return Response(
         {
