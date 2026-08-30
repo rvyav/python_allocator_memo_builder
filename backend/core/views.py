@@ -160,7 +160,7 @@ def upload(request):
         rows = []
 
         # Process rows
-        for row_number, row in enumerate(reader, start=2):
+        for _, row in enumerate(reader, start=2):
             try:
                 # Strings
                 fund_id = (row.get("fund_id") or "").strip()

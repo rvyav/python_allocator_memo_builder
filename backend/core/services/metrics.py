@@ -34,80 +34,53 @@ def calculate_max_drawdown(returns):
 
 # STAGE 1
 # MANDATE EVALUATION
-def evaluate_fund(fund_rows, mandate):
-    """
-    Evaluate one complete fund group.
+def evaluate_fund(fund, mandate):
+    # GET MONTHLY RETURNS
+    returns = [observation["monthly_return"] for observation in fund["monthly_returns"]]
 
-    fund_rows contains ALL monthly
-    observations for a single fund.
-    """
-    fund = build_fund_profile(fund_rows)
-
-    returns = [row["monthly_return"] for row in fund_rows]
-
-    # Fund metrics
+    # CALCULATE FUND METRICS
     volatility = calculate_volatility(returns)
     max_drawdown = calculate_max_drawdown(returns)
+    checks = {}
 
-    # Liquidity
-    if (mandate["liquidity"] == "No preference"):
+    # LIQUIDITY CHECK
+    if mandate["liquidity"] == "No preference":
         liquidity_pass = True
     else:
-        fund_liquidity = (
-            LIQUIDITY_ORDER[
-                fund[
-                    "redemption_frequency"
-                ]
-            ]
+        liquidity_pass = (
+            LIQUIDITY_ORDER[fund["redemption_frequency"]]
+            <=
+            LIQUIDITY_ORDER[mandate["liquidity"]]
         )
 
-        required_liquidity = LIQUIDITY_ORDER[mandate["liquidity"]]
-        liquidity_pass = fund_liquidity <= required_liquidity
+    checks["liquidity"] = {
+        "value": fund["redemption_frequency"],
+        "pass": liquidity_pass,
+    }
 
-    # Volatility
+    # VOLATILITY CHECK
     min_vol, max_vol = VOLATILITY_RULES[mandate["target_volatility"]]
 
     if min_vol is None:
         volatility_pass = True
-    elif max_vol is None:
-        volatility_pass = volatility >= min_vol
     else:
         volatility_pass = min_vol <= volatility <= max_vol
 
-    # Drawdown
-    max_allowed_drawdown = DRAWDOWN_RULES[mandate["max_drawdown"]]
+    checks["volatility"] = {"value": volatility, "pass": volatility_pass}
 
-    if (max_allowed_drawdown is None):
-        drawdown_pass = True
-    else:
-        drawdown_pass = abs(max_drawdown) <= max_allowed_drawdown
+    # MAX DRAWDOWN CHECK
+    drawdown_limit = DRAWDOWN_RULES[mandate["max_drawdown"]]
 
-    # Strategy
+    drawdown_pass = abs(max_drawdown) <= drawdown_limit
+
+    checks["max_drawdown"] = {"value": max_drawdown, "pass": drawdown_pass}
+
+    # STRATEGY CHECK
     strategy_pass = fund["strategy"] in mandate["strategies"]
 
-    # Checks
-    checks = {
-        "liquidity": {
-            "value": fund["redemption_frequency"],
-            "pass": liquidity_pass,
-        },
+    checks["strategy"] = {"value": fund["strategy"], "pass": strategy_pass}
 
-        "volatility": {
-            "value": round(float(volatility), 4),
-            "pass": volatility_pass,
-        },
-
-        "max_drawdown": {
-            "value": round(float(max_drawdown), 4),
-            "pass": drawdown_pass,
-        },
-
-        "strategy": {
-            "value": fund["strategy"],
-            "pass": strategy_pass,
-        },
-    }
-
+    # FINAL ELIGIBILITY
     eligible = all(check["pass"] for check in checks.values())
 
     return {
@@ -116,7 +89,7 @@ def evaluate_fund(fund_rows, mandate):
         "checks": checks,
     }
 
-
+  
 # BENCHMARK COMPARISON
 def calculate_benchmark_comparison(
     fund_rows,
@@ -351,77 +324,64 @@ def create_rationale(evaluation, comparison):
     return reasons
 
 
-# BUILD RANKED SHORTLIST
 def build_ranked_shortlist(
     funds,
     mandate,
-    benchmark_data,
+    benchmark_data
 ):
     eligible_funds = []
 
-    for (fund_id,fund_rows) in funds.items():
-        # Build validated fund profile
+    for _, fund_rows in funds.items():
         fund = build_fund_profile(fund_rows)
 
-        # Stage 1
-        # Mandate evaluation
-        evaluation = evaluate_fund(fund_rows, mandate)
+        evaluation = evaluate_fund(fund, mandate)
 
+        # Skip funds that fail mandate
         if not evaluation["eligible"]:
             continue
 
-        # Fund benchmark
-        benchmark_ticker = fund["benchmark_ticker"].strip().upper()
+        benchmark_ticker = (fund["benchmark_ticker"].strip().upper())
 
-        if (benchmark_ticker not in benchmark_data):
+        if benchmark_ticker not in benchmark_data:
             raise ValueError(
-                "Benchmark data "
-                "not found for "
-                f"{benchmark_ticker}"
+                f"Benchmark data not found "
+                f"for {benchmark_ticker}"
             )
 
-        benchmark_returns = benchmark_data[benchmark_ticker]
-
-        # Performance comparison
-        comparison = calculate_benchmark_comparison(fund_rows, benchmark_returns)
-
-        # Stage 2
-        # Score
+        comparison = (calculate_benchmark_comparison(
+                fund_rows,
+                benchmark_data[benchmark_ticker],
+            )
+        )
         score = score_fund(evaluation, comparison)
+        rationale = create_rationale(
+            evaluation,
+            comparison
+        )
+        eligible_funds.append(
+            {
+                "fund_id": fund["fund_id"],
+                "fund_name": fund["fund_name"],
+                "manager_name": fund["manager_name"],
+                "strategy": fund["strategy"],
+                "benchmark_ticker":benchmark_ticker,
+                "aum": fund["aum"],
+                "redemption_frequency": fund["redemption_frequency"],
+                "score": score["overall_score"],
+                "score_breakdown": score,
+                "performance": comparison,
+                "evaluation": evaluation,
+                "reasons": rationale,
+            }
+        )
 
-        # Stage 3
-        # Rationale
-        rationale = create_rationale(evaluation, comparison)
-
-        # Save complete ranked object
-        eligible_funds.append({
-            "fund_id": fund_id,
-            "fund_name": fund["fund_name"],
-            "manager_name": fund["manager_name"],
-            "strategy": fund["strategy"],
-            "benchmark_ticker": benchmark_ticker,
-            "aum": fund["aum"],
-            "management_fee": fund["management_fee"],
-            "performance_fee": fund["performance_fee"],
-            "lockup_months": fund["lockup_months"],
-            "redemption_frequency": fund["redemption_frequency"],
-            "notice_period_days": fund["notice_period_days"],
-            "notes": fund["notes"],
-            "key_risks": fund["key_risks"],
-            "score": score["overall_score"],
-            "score_breakdown": score,
-            "performance": comparison,
-            "evaluation": evaluation,
-            "reasons": rationale,
-        })
-
-    # Sort strongest → weakest
     ranked_funds = sorted(
         eligible_funds,
         key=lambda fund: fund["score"],
         reverse=True,
     )
-    # Assign rank
+
     for index, fund in enumerate(ranked_funds, start=1):
         fund["rank"] = index
+
     return ranked_funds

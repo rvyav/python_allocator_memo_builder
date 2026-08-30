@@ -41,7 +41,7 @@ Once its running, open the browser to access the health check page: `http://127.
 
 ### POSTGRESQL
 
-Assuming that you are postgresql running in your terminal in the background:
+Assuming that you are running postgresql in your terminal in the background:
 - `psql -U postgres`: access postgresql
 - `CREATE USER myapp_user WITH PASSWORD 'your_secure_password';` create a new user
 - `CREATE DATABASE myapp_db OWNER myapp_user;` create a database
